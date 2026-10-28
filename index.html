@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CAD visuals</title>
+<style>
+body{margin:0;background:#111;color:#ddd;font:14px system-ui,sans-serif}
+p{margin:0;padding:8px 10px}
+img{display:block;width:100%;height:auto;margin:0 0 10px}
+</style></head>
+<body><p id="s">Loading…</p><div id="g"></div>
+<script>
+let last = '';
+async function tick() {
+  try {
+    const r = await fetch('latest.json?t=' + Date.now(), {cache: 'no-store'});
+    const j = await r.json();
+    if (j.stamp !== last) {
+      last = j.stamp;
+      document.getElementById('g').innerHTML =
+        j.images.map(f => '<img src="' + f + '?v=' + j.stamp + '">').join('');
+    }
+    document.getElementById('s').textContent = j.title + ' · updated ' + j.stamp + ' · checks every 15 s';
+  } catch (e) {
+    document.getElementById('s').textContent = 'Offline, retrying…';
+  }
+}
+tick(); setInterval(tick, 15000);
+</script></body></html>
